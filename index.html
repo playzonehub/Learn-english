@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speak English - 30 Days</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f3f5fb;
+ color:#20243a;
+}
+header{
+ background:linear-gradient(135deg,#5146e5,#8375ff);
+ color:white;
+ padding:25px 18px;
+ border-radius:0 0 25px 25px;
+}
+header h1{margin:0;font-size:24px}
+header p{margin-bottom:0;opacity:.9}
+.container{max-width:850px;margin:auto;padding:16px}
+.card{
+ background:white;padding:18px;
+ border-radius:17px;margin-bottom:15px;
+ box-shadow:0 3px 15px #0000000b;
+}
+.progress{
+ background:#e8e8f3;height:9px;
+ border-radius:20px;overflow:hidden;
+}
+.progress div{
+ height:100%;background:#6255ee;width:0%;
+}
+button{
+ border:0;border-radius:10px;
+ padding:12px 17px;
+ background:#6255ee;color:white;
+ font-size:15px;cursor:pointer;
+}
+button:disabled{opacity:.4}
+.nav{display:flex;justify-content:space-between;gap:10px}
+.day-grid{
+ display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
+}
+.day{
+ padding:13px 3px;background:#f0efff;
+ color:#5146e5;border-radius:10px;
+ text-align:center;cursor:pointer;font-size:13px;
+}
+.day.active{background:#6255ee;color:white}
+.day.done{background:#d9f7e8;color:#147a4b}
+h2{font-size:21px}
+h3{font-size:17px}
+.bengali{color:#62677b;line-height:1.7}
+.example{
+ background:#f4f3ff;padding:12px;
+ border-left:4px solid #6255ee;
+ border-radius:8px;margin:10px 0;
+}
+input{
+ width:100%;padding:12px;border:1px solid #ddd;
+ border-radius:9px;margin:10px 0;
+}
+footer{text-align:center;padding:20px;color:#777}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<header>
+ <h1>Speak English Confidently</h1>
+ <p>৩০ দিনে আত্মবিশ্বাসের সঙ্গে English বলা শিখুন</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+ <h3>My Learning Progress</h3>
+ <div class="progress"><div id="progressBar"></div></div>
+ <p id="progressText">0 / 30 Lessons Completed</p>
+</div>
+
+<div class="card">
+ <h3>📚 30 Days Course</h3>
+ <div class="day-grid" id="dayGrid"></div>
+</div>
+
+<div class="card" id="lessonCard">
+ <p id="dayNumber">DAY 1</p>
+ <h2 id="lessonTitle"></h2>
+ <p class="bengali" id="lessonIntro"></p>
+
+ <h3>📖 Today's Lesson</h3>
+ <div id="lessonContent"></div>
+
+ <h3>🗣️ Speaking Practice</h3>
+ <p id="practice"></p>
+
+ <h3>✍️ Your Practice</h3>
+ <p class="bengali">নিজে English-এ একটি বাক্য তৈরি করুন।</p>
+ <input id="myAnswer" placeholder="Write your English sentence">
+ <button onclick="saveAnswer()">Save Answer</button>
+ <p id="answerMsg"></p>
+
+ <div class="nav">
+  <button onclick="changeDay(-1)" id="prevBtn">Previous</button>
+  <button onclick="markDone()">Complete ✓</button>
+  <button onclick="changeDay(1)" id="nextBtn">Next →</button>
+ </div>
+</div>
+
+<div class="card">
+ <h2>⭐ 500 Useful English Sentences</h2>
+ <p class="bengali">প্রতিদিন ৫টি করে English sentence অনুশীলন করুন।</p>
+ <div id="sentences"></div>
+ <button onclick="showSentences()">Show More Sentences</button>
+</div>
+
+<div class="card">
+ <h2>📝 Quick Test</h2>
+ <p>Choose the correct English sentence for "আমি ভালো আছি।"</p>
+ <button onclick="checkQuiz(1)">I am fine.</button>
+ <button onclick="checkQuiz(2)">I fine am.</button>
+ <button onclick="checkQuiz(3)">Am I fine.</button>
+ <p id="quizResult"></p>
+</div>
+
+</div>
+
+<footer>
+ Speak English Confidently in 30 Days<br>
+ Learn • Practice • Improve
+</footer>
+
+<script>
+const lessons = [
+["Introduction","নিজের পরিচয় দিতে শিখুন।",[
+["My name is Rahul.","আমার নাম রাহুল।"],
+["I am from Kolkata.","আমি কলকাতা থেকে এসেছি।"],
+["I am a student.","আমি একজন ছাত্র।"],
+["I am 25 years old.","আমার বয়স ২৫ বছর।"],
+["Nice to meet you.","আপনার সঙ্গে দেখা হয়ে ভালো লাগল।"]
+],"Introduce yourself in English for one minute."],
+
+["Daily Greetings","প্রতিদিনের Greetings শিখুন।",[
+["Good morning.","সুপ্রভাত।"],
+["How are you?","আপনি কেমন আছেন?"],
+["I am fine.","আমি ভালো আছি।"],
+["Thank you.","ধন্যবাদ।"],
+["See you later.","পরে দেখা হবে।"]
+],"Practice greetings in front of a mirror."],
+
+["Basic English Words","সহজ English শব্দ শিখুন।",[
+["Come here.","এখানে আসুন।"],
+["Please sit down.","দয়া করে বসুন।"],
+["Listen to me.","আমার কথা শুনুন।"],
+["Wait a moment.","একটু অপেক্ষা করুন।"],
+["Let's go.","চলুন যাই।"]
+],"Speak these five sentences aloud."],
+
+["Using Am, Is, Are","Am, Is, Are-এর ব্যবহার শিখুন।",[
+["I am happy.","আমি খুশি।"],
+["He is busy.","সে ব্যস্ত।"],
+["She is beautiful.","সে সুন্দর।"],
+["We are ready.","আমরা প্রস্তুত।"],
+["They are friends.","তারা বন্ধু।"]
+],"Make five sentences using am, is and are."],
+
+["Daily Routine","নিজের দৈনন্দিন কাজ বলুন।",[
+["I wake up early.","আমি সকালে তাড়াতাড়ি উঠি।"],
+["I brush my teeth.","আমি দাঁত মাজি।"],
+["I take a bath.","আমি স্নান করি।"],
+["I eat breakfast.","আমি সকালের খাবার খাই।"],
+["I go to work.","আমি কাজে যাই।"]
+],"Describe your daily routine."],
+
+["Simple Present Tense","বর্তমানের অভ্যাস বোঝাতে Simple Present ব্যবহার করুন।",[
+["I play cricket.","আমি ক্রিকেট খেলি।"],
+["She cooks food.","সে রান্না করে।"],
+["He works hard.","সে কঠোর পরিশ্রম করে।"],
+["I drink water.","আমি জল খাই।"],
+["We study English.","আমরা ইংরেজি শিখি।"]
+],"Describe five things you do every day."],
+
+["Negative Sentences","না-বাচক বাক্য তৈরি করুন।",[
+["I do not know.","আমি জানি না।"],
+["I don't like tea.","আমি চা পছন্দ করি না।"],
+["He is not ready.","সে প্রস্তুত নয়।"],
+["I cannot swim.","আমি সাঁতার কাটতে পারি না।"],
+["She does not work here.","সে এখানে কাজ করে না।"]
+],"Create five negative sentences."],
+
+["Asking Questions","প্রশ্ন করতে শিখুন।",[
+["What is your name?","আপনার নাম কী?"],
+["Where do you live?","আপনি কোথায় থাকেন?"],
+["What do you do?","আপনি কী করেন?"],
+["Are you busy?","আপনি কি ব্যস্ত?"],
+["Can you help me?","আপনি কি আমাকে সাহায্য করতে পারেন?"]
+],"Ask five questions in English."],
+
+["Present Continuous","এখন কী হচ্ছে তা বলুন।",[
+["I am eating.","আমি খাচ্ছি।"],
+["She is cooking.","সে রান্না করছে।"],
+["He is sleeping.","সে ঘুমাচ্ছে।"],
+["They are playing.","তারা খেলছে।"],
+["I am learning English.","আমি ইংরেজি শিখছি।"]
+],"Describe what people are doing now."],
+
+["Past Tense","অতীতের ঘটনা বলতে শিখুন।",[
+["I went to school.","আমি স্কুলে গিয়েছিলাম।"],
+["I ate rice.","আমি ভাত খেয়েছিলাম।"],
+["She called me.","সে আমাকে ফোন করেছিল।"],
+["He came yesterday.","সে গতকাল এসেছিল।"],
+["I watched a movie.","আমি একটি সিনেমা দেখেছিলাম।"]
+],"Talk about what you did yesterday."],
+
+["Future Tense","ভবিষ্যতের পরিকল্পনা বলুন।",[
+["I will call you.","আমি আপনাকে ফোন করব।"],
+["I will go tomorrow.","আমি কাল যাব।"],
+["She will come soon.","সে শীঘ্রই আসবে।"],
+["I will help you.","আমি আপনাকে সাহায্য করব।"],
+["We will meet again.","আমরা আবার দেখা করব।"]
+],"Talk about your plans for tomorrow."],
+
+["Can, Could, May","অনুমতি ও সামর্থ্য বোঝান।",[
+["I can speak English.","আমি ইংরেজি বলতে পারি।"],
+["Could you help me?","আপনি কি আমাকে সাহায্য করবেন?"],
+["May I come in?","আমি কি ভিতরে আসতে পারি?"],
+["Can I sit here?","আমি কি এখানে বসতে পারি?"],
+["I could swim.","আমি সাঁতার কাটতে পারতাম।"]
+],"Make five sentences using can and could."],
+
+["There Is / There Are","কোনো কিছু আছে বোঝাতে শিখুন।",[
+["There is a book.","একটি বই আছে।"],
+["There are two chairs.","দুটি চেয়ার আছে।"],
+["There is a shop nearby.","কাছেই একটি দোকান আছে।"],
+["There are many people.","অনেক মানুষ আছে।"],
+["Is there a bank nearby?","কাছাকাছি কি ব্যাংক আছে?"]
+],"Describe your room."],
+
+["Prepositions","In, On, At-এর ব্যবহার শিখুন।",[
+["The book is on the table.","বইটি টেবিলের উপর।"],
+["I live in Kolkata.","আমি কলকাতায় থাকি।"],
+["I wake up at 7 AM.","আমি সকাল ৭টায় উঠি।"],
+["The keys are in my bag.","চাবিগুলো আমার ব্যাগে আছে।"],
+["He is at home.","সে বাড়িতে আছে।"]
+],"Describe where five objects are."],
+
+["Describing People","মানুষ ও জিনিসের বর্ণনা দিন।",[
+["He is very friendly.","সে খুব বন্ধুত্বপূর্ণ।"],
+["She is intelligent.","সে বুদ্ধিমান।"],
+["This is a beautiful house.","এটি একটি সুন্দর বাড়ি।"],
+["My father is hardworking.","আমার বাবা পরিশ্রমী।"],
+["The weather is pleasant.","আবহাওয়া মনোরম।"]
+],"Describe a person you know."],
+
+["Shopping English","দোকানে English-এ কথা বলুন।",[
+["How much is this?","এটার দাম কত?"],
+["Please show me this.","এটা দেখান।"],
+["Do you have another colour?","অন্য রং আছে?"],
+["It is too expensive.","এটি খুব দামি।"],
+["I will buy this.","আমি এটি কিনব।"]
+],"Act out a shopping conversation."],
+
+["Market Conversation","বাজারে কথা বলা শিখুন।",[
+["I need one kilo of potatoes.","আমার এক কেজি আলু দরকার।"],
+["Give me fresh vegetables.","আমাকে টাটকা সবজি দিন।"],
+["Please reduce the price.","দয়া করে দাম কমান।"],
+["Anything else?","আর কিছু?"],
+["That's all.","এই পর্যন্তই।"]
+],"Practice a market conversation."],
+
+["Restaurant English","রেস্টুরেন্টে অর্ডার করুন।",[
+["Can I see the menu?","আমি কি মেনু দেখতে পারি?"],
+["I would like chicken biryani.","আমি চিকেন বিরিয়ানি চাই।"],
+["Please bring some water.","দয়া করে একটু জল আনুন।"],
+["The food is delicious.","খাবারটি সুস্বাদু।"],
+["Can I have the bill?","বিলটা কি দিতে পারেন?"]
+],"Order food in English."],
+
+["Asking Directions","রাস্তার ঠিকানা জিজ্ঞাসা করুন।",[
+["Where is the railway station?","রেলস্টেশন কোথায়?"],
+["Go straight.","সোজা যান।"],
+["Turn left.","বাঁ দিকে ঘুরুন।"],
+["Turn right.","ডান দিকে ঘুরুন।"],
+["Is it far from here?","এখান থেকে কি দূরে?"]
+],"Explain how to reach a nearby place."],
+
+["Transport English","যাতায়াতের English শিখুন।",[
+["I need a taxi.","আমার একটি ট্যাক্সি দরকার।"],
+["Where is the bus stop?","বাসস্ট্যান্ড কোথায়?"],
+["How much is the fare?","ভাড়া কত?"],
+["Please stop here.","দয়া করে এখানে থামুন।"],
+["I am getting late.","আমার দেরি হয়ে যাচ্ছে।"]
+],"Practice booking a taxi."],
+
+["Telephone Conversation","ফোনে কথা বলা শিখুন।",[
+["Hello, who is speaking?","হ্যালো, কে বলছেন?"],
+["Can I speak to Rahul?","আমি কি রাহুলের সঙ্গে কথা বলতে পারি?"],
+["Please call me later.","পরে আমাকে ফোন করুন।"],
+["I will call you back.","আমি আপনাকে আবার ফোন করব।"],
+["The line is busy.","লাইন ব্যস্ত।"]
+],"Make a pretend phone call."],
+
+["Workplace English","অফিসে English ব্যবহার করুন।",[
+["I am working on it.","আমি এটি নিয়ে কাজ করছি।"],
+["Please send me the file.","আমাকে ফাইলটি পাঠান।"],
+["I have completed the work.","আমি কাজটি শেষ করেছি।"],
+["Let's discuss this.","চলুন এটি নিয়ে আলোচনা করি।"],
+["I need some help.","আমার একটু সাহায্য দরকার।"]
+],"Explain your work in English."],
+
+["Job Interview","ইন্টারভিউর প্রস্তুতি নিন।",[
+["Tell me about yourself.","নিজের সম্পর্কে বলুন।"],
+["I am hardworking.","আমি পরিশ্রমী।"],
+["I have good communication skills.","আমার যোগাযোগের দক্ষতা ভালো।"],
+["I am a quick learner.","আমি দ্রুত শিখতে পারি।"],
+["Thank you for this opportunity.","এই সুযোগের জন্য ধন্যবাদ।"]
+],"Introduce yourself as a job candidate."],
+
+["Talking About Experience","নিজের অভিজ্ঞতা বলুন।",[
+["I have three years of experience.","আমার তিন বছরের অভিজ্ঞতা আছে।"],
+["I worked in a company.","আমি একটি কোম্পানিতে কাজ করেছি।"],
+["I learned many things.","আমি অনেক কিছু শিখেছি।"],
+["I can solve problems.","আমি সমস্যা সমাধান করতে পারি।"],
+["I enjoy my work.","আমি আমার কাজ উপভোগ করি।"]
+],"Describe your work experience."],
+
+["Giving Opinions","নিজের মতামত প্রকাশ করুন।",[
+["I think you are right.","আমার মনে হয় আপনি ঠিক।"],
+["In my opinion, it is good.","আমার মতে এটি ভালো।"],
+["I agree with you.","আমি আপনার সঙ্গে একমত।"],
+["I don't think so.","আমার তা মনে হয় না।"],
+["That is a good idea.","এটি একটি ভালো ধারণা।"]
+],"Give your opinion about learning English."],
+
+["Plans and Invitations","পরিকল্পনা ও আমন্ত্রণ জানান।",[
+["Would you like to come?","আপনি কি আসতে চান?"],
+["Let's go together.","চলুন একসঙ্গে যাই।"],
+["I am planning a trip.","আমি একটি ভ্রমণের পরিকল্পনা করছি।"],
+["Are you free tomorrow?","আপনি কি কাল ফাঁকা আছেন?"],
+["That sounds great.","শুনতে দারুণ লাগছে।"]
+],"Invite a friend somewhere."],
+
+["Making Complaints","সমস্যা বা অভিযোগ জানান।",[
+["There is a problem.","একটি সমস্যা আছে।"],
+["This is not working.","এটি কাজ করছে না।"],
+["I am not satisfied.","আমি সন্তুষ্ট নই।"],
+["Please fix this issue.","দয়া করে সমস্যাটি ঠিক করুন।"],
+["I need a replacement.","আমার পরিবর্তে আরেকটি চাই।"]
+],"Explain a problem politely."],
+
+["Health and Emergency","স্বাস্থ্য ও জরুরি কথাবার্তা শিখুন।",[
+["I am not feeling well.","আমার শরীর ভালো লাগছে না।"],
+["I have a headache.","আমার মাথা ব্যথা করছে।"],
+["Please call a doctor.","দয়া করে ডাক্তার ডাকুন।"],
+["I need help.","আমার সাহায্য দরকার।"],
+["Where is the hospital?","হাসপাতাল কোথায়?"]
+],"Explain a health problem in English."],
+
+["Storytelling","ছোট গল্প বলতে শিখুন।",[
+["Yesterday I went to the market.","গতকাল আমি বাজারে গিয়েছিলাম।"],
+["I met my friend there.","সেখানে আমার বন্ধুর সঙ্গে দেখা হয়েছিল।"],
+["We talked for an hour.","আমরা এক ঘণ্টা কথা বলেছিলাম।"],
+["Then we went home.","তারপর আমরা বাড়ি ফিরেছিলাম।"],
+["It was a great day.","দিনটি খুব ভালো ছিল।"]
+],"Tell a short story about yesterday."],
+
+["Final Speaking Challenge","নিজের English speaking পরীক্ষা করুন।",[
+["My name is Rahul.","আমার নাম রাহুল।"],
+["I live in Kolkata.","আমি কলকাতায় থাকি।"],
+["I am learning English.","আমি ইংরেজি শিখছি।"],
+["I practice every day.","আমি প্রতিদিন অনুশীলন করি।"],
+["I can speak English confidently.","আমি আত্মবিশ্বাসের সঙ্গে ইংরেজি বলতে পারি।"]
+],"Speak continuously in English for three minutes."]
+];
+
+let current=Number(localStorage.getItem("currentDay"))||0;
+let completed=JSON.parse(localStorage.getItem("completedDays")||"[]");
+let sentencePage=0;
+
+function render(){
+ const d=lessons[current];
+ document.getElementById("dayNumber").innerText="DAY "+(current+1)+" / 30";
+ document.getElementById("lessonTitle").innerText=d[0];
+ document.getElementById("lessonIntro").innerText=d[1];
+ document.getElementById("practice").innerText=d[3];
+
+ document.getElementById("lessonContent").innerHTML=d[2].map(x=>
+ `<div class="example"><b>${x[0]}</b><br><span class="bengali">${x[1]}</span></div>`
+ ).join("");
+
+ document.getElementById("prevBtn").disabled=current===0;
+ document.getElementById("nextBtn").disabled=current===29;
+ document.getElementById("myAnswer").value=localStorage.getItem("answer"+current)||"";
+ document.getElementById("answerMsg").innerText="";
+ localStorage.setItem("currentDay",current);
+ updateProgress();
+ renderGrid();
+}
+
+function renderGrid(){
+ document.getElementById("dayGrid").innerHTML=lessons.map((d,i)=>
+ `<div class="day ${i===current?'active':''} ${completed.includes(i)?'done':''}" onclick="openDay(${i})">
+ ${completed.includes(i)?"✓ ":""}Day ${i+1}
+ </div>`
+ ).join("");
+}
+
+function updateProgress(){
+ let p=completed.length/30*100;
+ document.getElementById("progressBar").style.width=p+"%";
+ document.getElementById("progressText").innerText=completed.length+" / 30 Lessons Completed";
+}
+
+function openDay(n){current=n;render();window.scrollTo(0,0)}
+function changeDay(n){openDay(current+n)}
+
+function markDone(){
+ if(!completed.includes(current)){
+  completed.push(current);
+  localStorage.setItem("completedDays",JSON.stringify(completed));
+ }
+ render();
+ document.getElementById("answerMsg").innerText="Lesson completed! Great job!";
+}
+
+function saveAnswer(){
+ let a=document.getElementById("myAnswer").value;
+ localStorage.setItem("answer"+current,a);
+ document.getElementById("answerMsg").innerText="Your answer is saved!";
+}
+
+const sentences=[
+["How are you?","আপনি কেমন আছেন?"],
+["I am fine.","আমি ভালো আছি।"],
+["What is your name?","আপনার নাম কী?"],
+["Where do you live?","আপনি কোথায় থাকেন?"],
+["Nice to meet you.","আপনার সঙ্গে দেখা হয়ে ভালো লাগল।"],
+["Please help me.","দয়া করে আমাকে সাহায্য করুন।"],
+["I don't understand.","আমি বুঝতে পারছি না।"],
+["Please speak slowly.","দয়া করে ধীরে বলুন।"],
+["Could you repeat that?","আপনি কি আবার বলবেন?"],
+["I am learning English.","আমি ইংরেজি শিখছি।"],
+["What time is it?","এখন কয়টা বাজে?"],
+["I am getting ready.","আমি প্রস্তুত হচ্ছি।"],
+["I will call you.","আমি আপনাকে ফোন করব।"],
+["See you tomorrow.","আগামীকাল দেখা হবে।"],
+["Have a nice day.","আপনার দিনটি ভালো কাটুক।"]
+];
+
+function showSentences(){
+ let part=sentences.slice(sentencePage*5,sentencePage*5+5);
+ if(part.length===0){
+  sentencePage=0;
+  part=sentences.slice(0,5);
+ }
+ document.getElementById("sentences").innerHTML=part.map(x=>
+ `<div class="example"><b>${x[0]}</b><br>${x[1]}</div>`
+ ).join("");
+ sentencePage++;
+}
+function checkQuiz(n){
+ document.getElementById("quizResult").innerText=
+ n===1?"Correct! Well done!":"Try again. The correct answer is I am fine.";
+}
+render();
+showSentences();
+</script>
+</body>
+</html>
